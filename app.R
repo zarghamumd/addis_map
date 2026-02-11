@@ -8,7 +8,6 @@ library(scales)
 # Load data from the same folder as app.R
 woreda_yearly_shp <- readRDS("woreda_yearly_shp.rds")
 subcity_boundaries <- readRDS("subcity_boundaries.rds")
-rsconnect::writeManifest(appDir = ".", appPrimaryDoc = "app.R")
 woreda_yearly_shp <- st_transform(woreda_yearly_shp, 4326)
 subcity_boundaries <- st_transform(subcity_boundaries, 4326)
 
