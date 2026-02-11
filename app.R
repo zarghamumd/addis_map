@@ -1,19 +1,30 @@
-library(shiny)
-library(dplyr)
-library(sf)
-library(ggplot2)
-library(scales)
+# ---- auto-install + load required packages ----
+req_pkgs <- c(
+  "shiny",
+  "dplyr",
+  "sf",
+  "ggplot2",
+  "scales"
+)
+to_install <- setdiff(req_pkgs, rownames(installed.packages()))
+if (length(to_install) > 0) {
+  install.packages(to_install, repos = "https://cloud.r-project.org")
+}
 
-# Load data from the SAME folder as app.R
+invisible(lapply(req_pkgs, function(p) {
+  suppressPackageStartupMessages(library(p, character.only = TRUE))
+}))
+
+
+# Load data from the same folder as app.R
 woreda_yearly_shp <- readRDS("woreda_yearly_shp.rds")
 subcity_boundaries <- readRDS("subcity_boundaries.rds")
-
+rsconnect::writeManifest(appDir = ".", appPrimaryDoc = "app.R")
 woreda_yearly_shp <- st_transform(woreda_yearly_shp, 4326)
 subcity_boundaries <- st_transform(subcity_boundaries, 4326)
 
-# ---- RENAME COLUMNS (you control this) ----
+# ---- RENAME COLUMNS ----
 rename_cols_safe <- function(df, ren) {
-  # ren: named character vector, names = OLD col names, values = NEW col names
   stopifnot(is.character(ren), !is.null(names(ren)))
   
   old <- names(ren)
@@ -22,7 +33,6 @@ rename_cols_safe <- function(df, ren) {
   missing <- setdiff(old, names(df))
   if (length(missing)) stop("These columns are missing in data: ", paste(missing, collapse = ", "))
   
-  # prevent duplicate names after renaming
   final_names <- names(df)
   final_names[match(old, final_names)] <- new
   if (any(duplicated(final_names))) {
@@ -34,7 +44,7 @@ rename_cols_safe <- function(df, ren) {
   df
 }
 
-# Example: PUT YOUR OWN RENAMES HERE (old = "new")
+# old = "new"
 rename_map <- c(
   "n_tins" = "Number of Firms",
   "total_payroll" = "Sum of Payroll Amount",
