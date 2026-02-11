@@ -1,20 +1,9 @@
-# ---- auto-install + load required packages ----
-req_pkgs <- c(
-  "shiny",
-  "dplyr",
-  "sf",
-  "ggplot2",
-  "scales"
-)
-to_install <- setdiff(req_pkgs, rownames(installed.packages()))
-if (length(to_install) > 0) {
-  install.packages(to_install, repos = "https://cloud.r-project.org")
-}
 
-invisible(lapply(req_pkgs, function(p) {
-  suppressPackageStartupMessages(library(p, character.only = TRUE))
-}))
-
+library(shiny)
+library(dplyr)
+library(sf)
+library(ggplot2)
+library(scales)
 
 # Load data from the same folder as app.R
 woreda_yearly_shp <- readRDS("woreda_yearly_shp.rds")
